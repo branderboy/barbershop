@@ -142,12 +142,12 @@
                 <span class="font-medium text-sm tracking-wide uppercase">Available Now</span>
             </div>
             
-            <h1 class="text-5xl md:text-7xl font-heading font-bold text-white mb-6 uppercase tracking-tight leading-tight">
+            <h1 class="text-4xl sm:text-5xl md:text-7xl font-heading font-bold text-white mb-6 uppercase tracking-tight leading-tight">
                 Zero Build-Out. Revenue Day 1.<br>
-                <span class="text-4xl md:text-5xl text-transparent bg-clip-text bg-gradient-to-r from-brand-gold to-yellow-200">Prime U St Area Barbershop Ready Now.</span>
+                <span class="text-3xl sm:text-4xl md:text-5xl text-transparent bg-clip-text bg-gradient-to-r from-brand-gold to-yellow-200">Prime U St Area Barbershop Ready Now.</span>
             </h1>
             
-            <p class="mt-4 max-w-2xl mx-auto text-xl text-gray-400 font-light mb-10">
+            <p class="mt-4 max-w-2xl mx-auto text-lg sm:text-xl text-gray-400 font-light mb-10">
                 A rare opportunity to take over a newly constructed, ready-to-operate barbershop space. <strong>Zero construction costs—just move your tools in and start making money</strong> in one of Washington, D.C.'s most high-traffic corridors.
             </p>
             
@@ -211,17 +211,17 @@
 
             <!-- Gallery Grid -->
             <div id="gallery" class="fade-up grid grid-cols-1 md:grid-cols-3 gap-6 mb-16">
-                <div class="group relative overflow-hidden rounded-sm shadow-2xl border border-brand-gray hover:border-brand-gold/50 transition-colors">
-                    <div class="absolute inset-0 bg-black/20 group-hover:bg-transparent transition-all z-10"></div>
-                    <img src="images/barbershop-1.jpg" alt="Barbershop interior — styling stations and seating area at 809 Florida Ave NW" class="w-full h-[400px] object-cover transform group-hover:scale-105 transition-transform duration-700">
+                <div class="group relative overflow-hidden rounded-sm shadow-2xl border border-brand-gray hover:border-brand-gold/50 transition-colors cursor-pointer gallery-item">
+                    <div class="absolute inset-0 bg-black/20 group-hover:bg-transparent transition-all z-10 pointer-events-none"></div>
+                    <img src="images/barbershop-1.jpg" alt="Barbershop interior — styling stations and seating area at 809 Florida Ave NW" class="w-full h-[250px] md:h-[400px] object-cover transform group-hover:scale-105 transition-transform duration-700">
                 </div>
-                <div class="group relative overflow-hidden rounded-sm shadow-2xl border border-brand-gray hover:border-brand-gold/50 transition-colors">
-                    <div class="absolute inset-0 bg-black/20 group-hover:bg-transparent transition-all z-10"></div>
-                    <img src="images/barbershop-2.jpg" alt="Barbershop full interior view — newly constructed layout with professional lighting" class="w-full h-[400px] object-cover transform group-hover:scale-105 transition-transform duration-700">
+                <div class="group relative overflow-hidden rounded-sm shadow-2xl border border-brand-gray hover:border-brand-gold/50 transition-colors cursor-pointer gallery-item">
+                    <div class="absolute inset-0 bg-black/20 group-hover:bg-transparent transition-all z-10 pointer-events-none"></div>
+                    <img src="images/barbershop-2.jpg" alt="Barbershop full interior view — newly constructed layout with professional lighting" class="w-full h-[250px] md:h-[400px] object-cover transform group-hover:scale-105 transition-transform duration-700">
                 </div>
-                <div class="group relative overflow-hidden rounded-sm shadow-2xl border border-brand-gray hover:border-brand-gold/50 transition-colors">
-                    <div class="absolute inset-0 bg-black/20 group-hover:bg-transparent transition-all z-10"></div>
-                    <img src="images/barbershop-3.jpg" alt="Barbershop chairs and flooring — brand new barber chairs and premium finishes" class="w-full h-[400px] object-cover transform group-hover:scale-105 transition-transform duration-700">
+                <div class="group relative overflow-hidden rounded-sm shadow-2xl border border-brand-gray hover:border-brand-gold/50 transition-colors cursor-pointer gallery-item">
+                    <div class="absolute inset-0 bg-black/20 group-hover:bg-transparent transition-all z-10 pointer-events-none"></div>
+                    <img src="images/barbershop-3.jpg" alt="Barbershop chairs and flooring — brand new barber chairs and premium finishes" class="w-full h-[250px] md:h-[400px] object-cover transform group-hover:scale-105 transition-transform duration-700">
                 </div>
             </div>
 
@@ -742,6 +742,20 @@
         </div>
     </section>
 
+    <!-- Image Lightbox -->
+    <div id="lightbox" class="fixed inset-0 z-[70] bg-black/95 backdrop-blur-lg flex items-center justify-center p-4 opacity-0 pointer-events-none transition-opacity duration-300">
+        <button id="lightbox-close" class="absolute top-4 right-4 text-white bg-black/50 rounded-full p-2 hover:bg-brand-gold hover:text-black transition-colors z-10" aria-label="Close lightbox">
+            <i data-lucide="x" class="w-8 h-8"></i>
+        </button>
+        <button id="lightbox-prev" class="absolute left-4 text-white bg-black/50 rounded-full p-2 hover:bg-brand-gold hover:text-black transition-colors z-10" aria-label="Previous image">
+            <i data-lucide="chevron-left" class="w-8 h-8"></i>
+        </button>
+        <button id="lightbox-next" class="absolute right-4 text-white bg-black/50 rounded-full p-2 hover:bg-brand-gold hover:text-black transition-colors z-10" aria-label="Next image">
+            <i data-lucide="chevron-right" class="w-8 h-8"></i>
+        </button>
+        <img id="lightbox-img" src="" alt="" class="max-w-full max-h-[85vh] object-contain rounded-sm shadow-2xl">
+    </div>
+
     <!-- Mobile Sticky CTA -->
     <div id="sticky-cta" class="fixed bottom-0 left-0 right-0 z-50 bg-brand-dark/95 backdrop-blur border-t border-brand-gray p-3 sm:hidden transform translate-y-full transition-transform duration-300">
         <div class="flex gap-2">
@@ -817,6 +831,54 @@
             });
         }, { threshold: 0 });
         stickyObserver.observe(heroSection);
+
+        // Image Lightbox
+        const lightbox = document.getElementById('lightbox');
+        const lightboxImg = document.getElementById('lightbox-img');
+        const lightboxClose = document.getElementById('lightbox-close');
+        const lightboxPrev = document.getElementById('lightbox-prev');
+        const lightboxNext = document.getElementById('lightbox-next');
+        const galleryItems = document.querySelectorAll('.gallery-item');
+        let currentIndex = 0;
+
+        function openLightbox(index) {
+            currentIndex = index;
+            const img = galleryItems[index].querySelector('img');
+            lightboxImg.src = img.src;
+            lightboxImg.alt = img.alt;
+            lightbox.classList.remove('opacity-0', 'pointer-events-none');
+            lightbox.classList.add('opacity-100', 'pointer-events-auto');
+            document.body.style.overflow = 'hidden';
+        }
+        function closeLightbox() {
+            lightbox.classList.add('opacity-0', 'pointer-events-none');
+            lightbox.classList.remove('opacity-100', 'pointer-events-auto');
+            document.body.style.overflow = '';
+        }
+        function showPrev() {
+            currentIndex = (currentIndex - 1 + galleryItems.length) % galleryItems.length;
+            const img = galleryItems[currentIndex].querySelector('img');
+            lightboxImg.src = img.src;
+            lightboxImg.alt = img.alt;
+        }
+        function showNext() {
+            currentIndex = (currentIndex + 1) % galleryItems.length;
+            const img = galleryItems[currentIndex].querySelector('img');
+            lightboxImg.src = img.src;
+            lightboxImg.alt = img.alt;
+        }
+
+        galleryItems.forEach((item, i) => item.addEventListener('click', () => openLightbox(i)));
+        lightboxClose.addEventListener('click', closeLightbox);
+        lightboxPrev.addEventListener('click', showPrev);
+        lightboxNext.addEventListener('click', showNext);
+        lightbox.addEventListener('click', (e) => { if (e.target === lightbox) closeLightbox(); });
+        document.addEventListener('keydown', (e) => {
+            if (!lightbox.classList.contains('opacity-100')) return;
+            if (e.key === 'Escape') closeLightbox();
+            if (e.key === 'ArrowLeft') showPrev();
+            if (e.key === 'ArrowRight') showNext();
+        });
 
         // Re-init lucide icons after DOM updates
         setTimeout(() => lucide.createIcons(), 100);
