@@ -754,12 +754,14 @@
                 <p class="text-lg text-gray-400">Drop us a message and we'll get back to you as soon as possible.</p>
             </div>
 
-            <form class="fade-up space-y-6" action="https://formsubmit.co/square1fashions@gmail.com" method="POST">
+            <form id="contact-form" class="fade-up space-y-6" action="https://formsubmit.co/square1fashions@gmail.com" method="POST">
                 <!-- FormSubmit config -->
                 <input type="hidden" name="_subject" value="New Question – 809 Florida Ave Barbershop">
                 <input type="hidden" name="_captcha" value="true">
                 <input type="hidden" name="_template" value="table">
                 <input type="text" name="_honey" style="display:none">
+                <!-- Auto-reply to respondent -->
+                <input type="hidden" name="_autoresponse" value="Thank you for your interest in 809 Florida Ave NW! We've received your message and will get back to you within 24 hours. In the meantime, feel free to call us at (202) 455-3656 to schedule a walkthrough. — Hasan Smith, 809 Florida Ave NW">
 
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
                     <div>
@@ -796,6 +798,57 @@
                     Send Message
                 </button>
             </form>
+
+            <!-- Embedded Form Response (shown after submission) -->
+            <div id="form-response" class="hidden fade-up">
+                <div class="bg-zinc-900 border border-brand-gold/40 rounded-sm p-8 text-center">
+                    <div class="inline-flex items-center justify-center w-16 h-16 bg-brand-gold/10 border border-brand-gold/30 rounded-full mb-6">
+                        <i data-lucide="check-circle" class="w-8 h-8 text-brand-gold"></i>
+                    </div>
+                    <h3 class="text-2xl font-heading font-bold text-white uppercase tracking-tight mb-3">Message Sent!</h3>
+                    <div class="w-16 h-0.5 bg-brand-gold mx-auto mb-6"></div>
+                    <p class="text-gray-400 mb-8">Thanks for reaching out. We'll get back to you within 24 hours. A confirmation has been sent to your email.</p>
+
+                    <!-- Submitted details -->
+                    <div class="bg-black/40 border border-brand-gray rounded-sm p-6 text-left space-y-4 mb-8">
+                        <h4 class="text-sm font-heading font-bold text-brand-gold uppercase tracking-wide mb-4">Your Submission</h4>
+                        <div class="flex items-start gap-3">
+                            <i data-lucide="user" class="w-4 h-4 text-brand-gold mt-1 shrink-0"></i>
+                            <div>
+                                <span class="text-xs text-gray-500 uppercase tracking-wide">Name</span>
+                                <p id="response-name" class="text-white"></p>
+                            </div>
+                        </div>
+                        <div class="flex items-start gap-3">
+                            <i data-lucide="mail" class="w-4 h-4 text-brand-gold mt-1 shrink-0"></i>
+                            <div>
+                                <span class="text-xs text-gray-500 uppercase tracking-wide">Email</span>
+                                <p id="response-email" class="text-white"></p>
+                            </div>
+                        </div>
+                        <div id="response-phone-row" class="flex items-start gap-3">
+                            <i data-lucide="phone" class="w-4 h-4 text-brand-gold mt-1 shrink-0"></i>
+                            <div>
+                                <span class="text-xs text-gray-500 uppercase tracking-wide">Phone</span>
+                                <p id="response-phone" class="text-white"></p>
+                            </div>
+                        </div>
+                        <div class="flex items-start gap-3">
+                            <i data-lucide="message-square" class="w-4 h-4 text-brand-gold mt-1 shrink-0"></i>
+                            <div>
+                                <span class="text-xs text-gray-500 uppercase tracking-wide">Message</span>
+                                <p id="response-message" class="text-white whitespace-pre-line"></p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <button id="send-another-btn"
+                        class="inline-flex items-center gap-2 px-6 py-3 border border-brand-gold text-brand-gold hover:bg-brand-gold hover:text-black font-heading font-bold uppercase tracking-wide rounded-sm transition-colors text-sm">
+                        <i data-lucide="arrow-left" class="w-4 h-4"></i>
+                        Send Another Message
+                    </button>
+                </div>
+            </div>
         </div>
     </section>
 
@@ -935,6 +988,74 @@
             if (e.key === 'Escape') closeLightbox();
             if (e.key === 'ArrowLeft') showPrev();
             if (e.key === 'ArrowRight') showNext();
+        });
+
+        // Contact Form – AJAX submission with embedded response
+        const contactForm = document.getElementById('contact-form');
+        const formResponse = document.getElementById('form-response');
+        const sendAnotherBtn = document.getElementById('send-another-btn');
+
+        contactForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+
+            const formData = new FormData(contactForm);
+            const submitBtn = contactForm.querySelector('button[type="submit"]');
+            const originalBtnHTML = submitBtn.innerHTML;
+
+            // Show loading state
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = '<svg class="animate-spin w-5 h-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"></path></svg> Sending...';
+
+            fetch(contactForm.action, {
+                method: 'POST',
+                body: formData,
+                headers: { 'Accept': 'application/json' }
+            })
+            .then(function(response) {
+                if (response.ok) {
+                    // Populate the response panel with submitted data
+                    document.getElementById('response-name').textContent = formData.get('name');
+                    document.getElementById('response-email').textContent = formData.get('email');
+                    const phone = formData.get('phone');
+                    if (phone) {
+                        document.getElementById('response-phone').textContent = phone;
+                        document.getElementById('response-phone-row').classList.remove('hidden');
+                    } else {
+                        document.getElementById('response-phone-row').classList.add('hidden');
+                    }
+                    document.getElementById('response-message').textContent = formData.get('message');
+
+                    // Hide form, show response
+                    contactForm.classList.add('hidden');
+                    formResponse.classList.remove('hidden');
+                    formResponse.classList.add('visible');
+
+                    // Re-init icons for new elements
+                    lucide.createIcons();
+
+                    // Scroll response into view
+                    formResponse.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                } else {
+                    throw new Error('Form submission failed');
+                }
+            })
+            .catch(function() {
+                alert('Something went wrong. Please try again or contact us directly at (202) 455-3656.');
+            })
+            .finally(function() {
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = originalBtnHTML;
+                lucide.createIcons();
+            });
+        });
+
+        // "Send Another Message" resets and shows the form again
+        sendAnotherBtn.addEventListener('click', function() {
+            formResponse.classList.add('hidden');
+            formResponse.classList.remove('visible');
+            contactForm.reset();
+            contactForm.classList.remove('hidden');
+            contactForm.scrollIntoView({ behavior: 'smooth', block: 'center' });
         });
 
         // Re-init lucide icons after DOM updates
